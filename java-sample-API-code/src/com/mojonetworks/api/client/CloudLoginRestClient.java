@@ -26,15 +26,10 @@ public class CloudLoginRestClient {
 	private static String HOT_POTATOES="https://";
 
 	public static void main(String[] args) {
-		//Login to MLP
-		//Fetch Services
-		//Login to service
-			//Fetch/Push data to MWM service using the MWMApiSession
-		//Disconnect from Service
-		//Disconnect from MLP
 		
 		Map<MLPService.Service,MWMApiSession> mwmSessionMap = new HashMap<>();
 		
+		//Login to MLP
 		MLPApiSession mlpApiSession=null;
 		try {
 			mlpApiSession = CloudServiceLoginAccessor.mlpKeyLogin("mojo.airtightnw.com", keyId, keyValue);
@@ -44,6 +39,7 @@ public class CloudLoginRestClient {
 			System.exit(0);
 		}
 		
+		//Fetch Services
 		MLPService[] mwmServices = MLPCommunicator.getAllMWMServices(mlpApiSession).getCustomerServices();
 		
 		for (MLPService mlpService : mwmServices) {
@@ -52,6 +48,7 @@ public class CloudLoginRestClient {
 				serviceURL = serviceURL.substring(HOT_POTATOES.length());
 			}
 			
+			//Login to service
 			MWMApiSession mwmApiSession;
 			try {
 				mwmApiSession = CloudServiceLoginAccessor.mwmKeyLogin(serviceURL,keyId,keyValue,"TestClient");
@@ -64,12 +61,14 @@ public class CloudLoginRestClient {
 			mwmSessionMap.put(mlpService.getService(),mwmApiSession);
 		}
 		
+		//Fetch/Push data to MWM service using the MWMApiSession
 		/*
 		 * Your code to access various MWM objects here
 		 */
 		
 		
 		
+		//Disconnect from Service
 		for (Map.Entry<MLPService.Service, MWMApiSession> entry : mwmSessionMap.entrySet()) {
 			
 			try {
@@ -81,6 +80,7 @@ public class CloudLoginRestClient {
 			}
 		}
 		
+		//Disconnect from MLP
 		//TODO: Logout from MLP? - Check with MLP team
 		
 		
