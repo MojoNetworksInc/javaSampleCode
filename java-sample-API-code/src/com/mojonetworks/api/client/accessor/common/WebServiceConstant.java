@@ -32,7 +32,13 @@ public interface WebServiceConstant {
 	public static final String MWM_ASSOCIATION_DATA = "/associationdata";
 	public static final String MWM_LOCATION_QUERYPARAM = "location";
 	public static final String MWM_HASH_MAC_PARAM = "tohashmac";
-
+	public static final String DEVICE = "/device";
+	public static final String APS = "/aps";
+	public static final String CLIENTS = "/clients";
+	public static final String AT_LOCATION = "/atlocation";
+	public static final String CLIENTS_AT_LOCATION = CLIENTS + AT_LOCATION;
+	public static final String APS_AT_LOCATION = APS + AT_LOCATION;
+	public static final String LOCATION_PARAM = "location";
 	
 	public static final String JSESSION_ID = "JSESSIONID";
 	public static final String PROTOCOL_SSL = "TLSv1.2";

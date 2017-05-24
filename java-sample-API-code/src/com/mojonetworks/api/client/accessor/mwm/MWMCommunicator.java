@@ -10,9 +10,12 @@
 package com.mojonetworks.api.client.accessor.mwm;
 
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -21,6 +24,8 @@ import com.mojonetworks.api.client.accessor.common.ApiSessionProvider;
 import com.mojonetworks.api.client.accessor.common.WebApiUtility;
 import com.mojonetworks.api.client.accessor.common.WebHTTPRequestInvoker;
 import com.mojonetworks.api.client.accessor.common.WebServiceConstant;
+import com.mojonetworks.api.client.dataobjects.mwm.AP;
+import com.mojonetworks.api.client.dataobjects.mwm.Client;
 import com.mojonetworks.api.client.dataobjects.mwm.LocationId;
 import com.mojonetworks.api.client.dataobjects.mwm.MWMVersion;
 import com.mojonetworks.api.client.dataobjects.mwm.session.MWMApiSession;
@@ -135,6 +140,38 @@ public class MWMCommunicator {
 		} catch (ApiClientException e) {
 			throw new ApiClientException("Error fetching Analytics data:"+ e.getMessage(),e);
 		}
+	}
+	
+	/**
+	 * @param session
+	 * @param locationId
+	 * @return
+	 * @throws ApiClientException
+	 */
+	public static Collection<AP> getAPs(MWMApiSession session, LocationId locationId) throws ApiClientException{
+		try{
+			String uri = session.getTarget().getUri().toString() + WebServiceConstant.DEVICE + WebServiceConstant.APS_AT_LOCATION;
+			Map<String, String> queryParams = new HashMap<String, String>();
+			queryParams.put(WebServiceConstant.LOCATION_PARAM, WebApiUtility.convertDOToJSON(locationId));
+			Response response = WebHTTPRequestInvoker.get(session.getTarget(), uri, queryParams);
+			List<AP> listAPs = response.readEntity(new GenericType<List<AP>>(){});
+			response.close();
+			return listAPs;
+		} catch(ApiClientException e){
+			throw e;
+		}
+	}
+	/**
+	 * @param session
+	 * @return
+	 * @throws ApiClientException
+	 */
+	public static Collection<Client> getClients(MWMApiSession session) throws ApiClientException {
+		String uri = session.getTarget().getUri().toString() + WebServiceConstant.DEVICE + WebServiceConstant.CLIENTS;
+		Response response = WebHTTPRequestInvoker.get(session.getTarget(), uri, null);
+		List<Client> listClients = response.readEntity(new GenericType<List<Client>>(){});
+		response.close();
+		return listClients;
 	}
 	
 }

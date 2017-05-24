@@ -12,6 +12,8 @@ package com.mojonetworks.api.client.dataobjects.mwm;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class FolderLocation extends Location {
 
 	private List<LocationId> children = new LinkedList<LocationId>();

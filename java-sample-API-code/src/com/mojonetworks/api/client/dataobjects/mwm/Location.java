@@ -10,10 +10,11 @@
 
 package com.mojonetworks.api.client.dataobjects.mwm;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
-
+@JsonIgnoreProperties(ignoreUnknown=true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = FloorLocation.class, name = "floorlocation"), @Type(value = FolderLocation.class, name = "folderlocation") })
 public abstract class Location{
