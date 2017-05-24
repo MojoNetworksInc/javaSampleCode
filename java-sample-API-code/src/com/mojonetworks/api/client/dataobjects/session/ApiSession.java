@@ -97,4 +97,8 @@ public class ApiSession {
 		return true;
 	}
 
+	public String getJsessionid() {
+		return jsessionid;
+	}
+
 }

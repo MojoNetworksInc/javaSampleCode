@@ -9,6 +9,9 @@
 
 package com.mojonetworks.api.client.accessor.common;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
@@ -47,6 +51,9 @@ import com.mojonetworks.api.client.dataobjects.session.ApiSession.SessionState;
  *
  */
 public class ApiSessionProvider {
+	private static HostnameVerifier hostNameVerifier=null;
+	private static TrustManager trustManager=null;
+
 	public static MWMApiSession getMWMAPISession(String mwmHost, AuthenticationInfo authInfo, String clientIdPrefix, long timeout) throws ApiClientException {
 		return connectMWM(mwmHost, authInfo, clientIdPrefix, timeout);
 	}
@@ -144,26 +151,69 @@ public class ApiSessionProvider {
 	}
 	
 	
-	private static ResteasyClient buildClient() {
-		System.setProperty(WebServiceConstant.HTTPS_PROTOCOLS, WebServiceConstant.PROTOCOL_SSL);
-		X509TrustManager xtm = new CompleteTrustManager();
-		TrustManager mytm[] = {xtm};
-		SSLContext ctx = null;
+	
+	public static void downloadURLResource(MWMApiSession session, String url, OutputStream outputStream) throws ApiClientException{
+		InputStream inputStream = null;
 		try {
-			ctx = SSLContext.getInstance(WebServiceConstant.PROTOCOL_SSL);
-			ctx.init(null,mytm, null );
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
+			SSLContext sc = getSSLContext(); 
+			URL fileUrl = new URL(url);
+			HttpsURLConnection conn = (HttpsURLConnection)fileUrl.openConnection();
+			conn.setSSLSocketFactory(sc.getSocketFactory());
+			conn.setHostnameVerifier(getHostNameVerifier());
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setUseCaches(false);
+			conn.setRequestProperty("Cookie", WebServiceConstant.JSESSION_ID+"="+session.getJsessionid());
+			inputStream = conn.getInputStream();
+			int readBytes;
+	
+			byte[] src_bytes=new byte[1024];
+			while((readBytes=inputStream.read(src_bytes,0,1024))!=-1){
+				outputStream.write(src_bytes,0,readBytes);
+			}
+	
+		} catch (Exception e) {
+			throw new ApiClientException("Error downloading the file from URL:"+url,e);
+		} finally{
+			WebApiUtility.closeStream(outputStream);
+			WebApiUtility.closeStream(inputStream);
 		}
-
+	}
+	
+	
+	private static ResteasyClient buildClient() throws ApiClientException {
+		SSLContext ctx = getSSLContext();
 		ResteasyClientBuilder resteasyClientBuilder = new ResteasyClientBuilder();
 		resteasyClientBuilder.connectionPoolSize(10);
-		resteasyClientBuilder.hostnameVerifier(new PseudoNameVerifier());
 		resteasyClientBuilder.sslContext(ctx);
+		resteasyClientBuilder.hostnameVerifier(getHostNameVerifier());
 		ResteasyClient client = resteasyClientBuilder.build();
 		return client;
+	}
+
+	private static SSLContext getSSLContext() throws ApiClientException {
+		try{
+			System.setProperty(WebServiceConstant.HTTPS_PROTOCOLS, WebServiceConstant.PROTOCOL_SSL);
+			TrustManager trustManager[] = {getTrustManager()};
+			SSLContext ctx = SSLContext.getInstance(WebServiceConstant.PROTOCOL_SSL);
+			ctx.init(null,trustManager, null );
+			return ctx;
+		} catch (KeyManagementException | NoSuchAlgorithmException e) {
+			throw new ApiClientException("Error creating the SSL Context", e);
+		}
+	}
+	
+	synchronized private static HostnameVerifier getHostNameVerifier() {
+		if(hostNameVerifier==null){
+			hostNameVerifier = new PseudoNameVerifier();
+		}
+		return hostNameVerifier;
+	}
+ 	synchronized private static TrustManager getTrustManager() {
+		if(trustManager==null){
+			trustManager = new CompleteTrustManager();
+		}
+		return trustManager;
 	}
 
 	

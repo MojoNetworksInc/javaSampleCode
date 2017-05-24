@@ -31,7 +31,7 @@ public class LocalLoginRestClient {
 		}
 
 		/*
-		 * Your code to access various MWM objects here
+		 * Your code to access various MWM objects here using the MWMCommunicator
 		 */
 		
 		

@@ -18,16 +18,23 @@ public interface WebServiceConstant {
 	public static final String MLP_SERVICES="/services";
 	public static final String MLP_SESSION_DATA="/session_data";
 	
-	public static final String MWM_BASE_URL="/new/webservice";
+	public static final int MWM_DEFAULT_TIMEOUT = 5*60;
+	public static final String MWM_BASE_URL="/new/webservice/v4";
 	public static final String MWM_LOGIN = "/login";
 	public static final String MWM_KEEP_ALIVE = "/keepsessionalive";
 	public static final String MWM_LOGOUT = "/logout";
 	public static final String MWM_PRODUCT_INFO = "/productinfo";
 	public static final String MWM_GET_VERSION = "/version";
 	public static final String MWM_INSTANCE_ID_REQUEST_ATTR = "IID";
-	public static final int MWM_DEFAULT_TIMEOUT = 5*60;
-	public static final String JSESSION_ID = "JSESSIONID";
+	public static final String MWM_LOCATION_TREE="/locations/tree";
+	public static final String MWM_ANALYTICS = "/analytics";
+	public static final String MWM_VISIBILITY_DATA = "/visibilitydata";
+	public static final String MWM_ASSOCIATION_DATA = "/associationdata";
+	public static final String MWM_LOCATION_QUERYPARAM = "location";
+	public static final String MWM_HASH_MAC_PARAM = "tohashmac";
 
+	
+	public static final String JSESSION_ID = "JSESSIONID";
 	public static final String PROTOCOL_SSL = "TLSv1.2";
 	public static final String HTTPS_PROTOCOLS = "https.protocols";
 	

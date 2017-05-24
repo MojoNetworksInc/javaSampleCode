@@ -32,17 +32,17 @@ public class MWMUser implements Serializable {
     /*
      * Location id required Location Management
      */
-    private Collection<MWMLocationId> allowedLocations = new ArrayList<MWMLocationId>();
+    private Collection<LocationId> allowedLocations = new ArrayList<LocationId>();
 
     public MWMUser(String loginName) {
     	this.loginName = loginName;
     	}
     
-	public Collection<MWMLocationId> getAllowedLocations() {
+	public Collection<LocationId> getAllowedLocations() {
 		return allowedLocations;
 	}
 
-	public void setAllowedLocations(Collection<MWMLocationId> allowedLocations) {
+	public void setAllowedLocations(Collection<LocationId> allowedLocations) {
 		this.allowedLocations = allowedLocations;
 	}
 

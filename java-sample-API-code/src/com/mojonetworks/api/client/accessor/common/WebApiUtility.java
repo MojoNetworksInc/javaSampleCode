@@ -9,6 +9,7 @@
  */
 package com.mojonetworks.api.client.accessor.common;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -17,6 +18,17 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class WebApiUtility {
 
+	
+	public static void closeStream(Closeable inputStream) {
+		if (inputStream != null) {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static <T> String convertDOToJSON(T dataObject) throws ApiClientException {
 		try {
 			return new ObjectMapper().writeValueAsString(dataObject);
