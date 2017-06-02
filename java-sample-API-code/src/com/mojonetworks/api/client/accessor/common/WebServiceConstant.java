@@ -33,6 +33,9 @@ public interface WebServiceConstant {
 	public static final String MWM_LOCATION_QUERYPARAM = "location";
 	public static final String MWM_HASH_MAC_PARAM = "tohashmac";
 	public static final String DEVICE = "/device";
+	public static final String V2_LOCATIONS = "/v2/locations";
+	public static final String TREE = "/tree";
+	public static final String BATCH = "/new/webservice/batch";
 	public static final String APS = "/aps";
 	public static final String CLIENTS = "/clients";
 	public static final String AT_LOCATION = "/atlocation";

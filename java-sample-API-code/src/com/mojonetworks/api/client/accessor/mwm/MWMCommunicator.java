@@ -9,15 +9,29 @@
  */
 package com.mojonetworks.api.client.accessor.mwm;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 
 import com.mojonetworks.api.client.accessor.common.ApiClientException;
 import com.mojonetworks.api.client.accessor.common.ApiSessionProvider;
@@ -25,8 +39,14 @@ import com.mojonetworks.api.client.accessor.common.WebApiUtility;
 import com.mojonetworks.api.client.accessor.common.WebHTTPRequestInvoker;
 import com.mojonetworks.api.client.accessor.common.WebServiceConstant;
 import com.mojonetworks.api.client.dataobjects.mwm.AP;
+import com.mojonetworks.api.client.dataobjects.mwm.BatchResponseData;
 import com.mojonetworks.api.client.dataobjects.mwm.Client;
+import com.mojonetworks.api.client.dataobjects.mwm.FolderLocation;
+import com.mojonetworks.api.client.dataobjects.mwm.LocalLocationId;
+import com.mojonetworks.api.client.dataobjects.mwm.Location;
 import com.mojonetworks.api.client.dataobjects.mwm.LocationId;
+import com.mojonetworks.api.client.dataobjects.mwm.LocationRequestData;
+import com.mojonetworks.api.client.dataobjects.mwm.LocationTree;
 import com.mojonetworks.api.client.dataobjects.mwm.MWMVersion;
 import com.mojonetworks.api.client.dataobjects.mwm.session.MWMApiSession;
 import com.mojonetworks.api.client.dataobjects.session.ApiSession.SessionState;
@@ -173,5 +193,73 @@ public class MWMCommunicator {
 		response.close();
 		return listClients;
 	}
-	
+
+	/**
+	 * Batch API sample code which creates Location and fetches location tree.
+	 * @param mwmApiSession
+	 * @return List of responses
+	 * @throws ApiClientException
+	 */
+	public static List<Object> executeBatchOperation(MWMApiSession mwmApiSession) throws ApiClientException{
+		List<Object> batchResponse = new ArrayList<>();
+		
+		//Step 1a: Create Get Location tree request
+		String getLocationTreeUrl = WebServiceConstant.V2_LOCATIONS + WebServiceConstant.TREE;
+		final String getLocationTreeRequest = WebApiUtility.addRequestInBatch(1,HttpMethod.GET, getLocationTreeUrl, null);
+		
+		//Step 1b: Add Location
+		LocationRequestData locationRequestData = new LocationRequestData();
+		locationRequestData.setParentLocation(new LocalLocationId(0));
+		FolderLocation location = new FolderLocation();
+		location.setName("New");
+		location.setTimezoneId("Asia/Kolkata");
+		locationRequestData.setLocation(location);
+		
+		String addLocationUrl =  WebServiceConstant.V2_LOCATIONS;
+		final String addLocationRequest =  WebApiUtility.addRequestInBatch(1,HttpMethod.PUT, addLocationUrl, WebApiUtility.convertDOToJSON(locationRequestData));
+		
+		//Step 2: Create batch request
+		MultipartFormDataOutput batchRequest = new MultipartFormDataOutput();
+		batchRequest.addFormData("addLocation", new ByteArrayInputStream(addLocationRequest.getBytes()), MediaType.TEXT_PLAIN_TYPE);
+		batchRequest.addFormData("fetchLocationTree", new ByteArrayInputStream(getLocationTreeRequest.getBytes()), MediaType.TEXT_PLAIN_TYPE);
+
+		GenericEntity<MultipartFormDataOutput> entity = new GenericEntity<MultipartFormDataOutput>(batchRequest) { };
+		final Entity<GenericEntity<MultipartFormDataOutput>> entity2 = Entity.entity(entity,  new MediaType("multipart", "mixed"));
+		Map<String, String> queryParams = new HashMap<String, String>();
+		queryParams.put("executionmode", "SERIAL");
+
+		//Step 3: Execute batch request
+		Response response = WebHTTPRequestInvoker.post(mwmApiSession.getTarget(), "https://"+mwmApiSession.getTarget().getUri().getHost()+ WebServiceConstant.BATCH,entity2,queryParams);
+
+		try {
+			ByteArrayDataSource ds;
+			ds = new ByteArrayDataSource(new ByteArrayInputStream(response.readEntity(String.class).getBytes("UTF-8")), "multipart/mixed");
+			MimeMultipart multipart = new MimeMultipart(ds);
+			
+			//Step 4a: First response
+			BodyPart part1 = multipart.getBodyPart(0);
+			final String responseData1 = part1.getDataHandler().getContent().toString();
+			BatchResponseData batchResponseData1 = WebApiUtility.buildBatchResponseData(responseData1);
+			
+			if(WebApiUtility.isSuccessResponse(batchResponseData1)){
+				batchResponse.add(new ObjectMapper().readValue(batchResponseData1.getBody(), LocationTree.class));
+			}
+			batchResponse.add(batchResponseData1.getBody());
+			
+			////Step 4b: First response
+			BodyPart part2 = multipart.getBodyPart(1);
+			final String responseData2 = part2.getDataHandler().getContent().toString();
+			BatchResponseData batchResponseData2 = WebApiUtility.buildBatchResponseData(responseData2);
+			
+			if(WebApiUtility.isSuccessResponse(batchResponseData2)){
+				batchResponse.add(new ObjectMapper().readValue(batchResponseData2.getBody(), Location.class));
+			}
+			
+			batchResponse.add(batchResponseData2.getBody());
+		} catch (IOException | MessagingException e) {
+			throw new ApiClientException("Error occured while executing batch operation:",e);
+		}
+		response.close();
+		return batchResponse;
+	}
 }

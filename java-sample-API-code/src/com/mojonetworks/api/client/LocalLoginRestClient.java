@@ -10,6 +10,7 @@
 package com.mojonetworks.api.client;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.mojonetworks.api.client.accessor.OnPremServiceLoginAccessor;
 import com.mojonetworks.api.client.accessor.common.ApiClientException;
@@ -52,6 +53,14 @@ public class LocalLoginRestClient {
 			// Fetch All Clients
 			Collection<Client> clients = MWMCommunicator.getClients(mwmApiSession);
 			System.out.println("List of Clients:"+WebApiUtility.convertDOToJSON(clients));
+		} catch (ApiClientException e1) {
+			e1.printStackTrace();
+		}
+		
+		//Add location and  fetch locations using batch
+		try {
+			List<Object> responses = MWMCommunicator.executeBatchOperation(mwmApiSession);;
+			System.out.println("List of responses:"+ responses);
 		} catch (ApiClientException e1) {
 			e1.printStackTrace();
 		}
