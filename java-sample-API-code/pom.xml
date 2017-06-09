@@ -13,8 +13,14 @@
 		<dependency>
 		    <groupId>org.jboss.resteasy</groupId>
 		    <artifactId>resteasy-client</artifactId>
-		    <version>3.0.22.Final</version>
+		    <version>${resteasy.version}</version>
 		</dependency>
+		
+		<dependency>
+    		<groupId>org.jboss.resteasy</groupId>
+    		<artifactId>resteasy-multipart-provider</artifactId>
+    		<version>${resteasy.version}</version>
+		</dependency> 
 		 <!-- Resteasy JSON library -->
   		 <dependency>
 			<groupId>org.jboss.resteasy</groupId>
