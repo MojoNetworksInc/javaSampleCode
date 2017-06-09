@@ -48,7 +48,10 @@ import com.mojonetworks.api.client.dataobjects.mwm.LocationId;
 import com.mojonetworks.api.client.dataobjects.mwm.LocationRequestData;
 import com.mojonetworks.api.client.dataobjects.mwm.LocationTree;
 import com.mojonetworks.api.client.dataobjects.mwm.MWMVersion;
+import com.mojonetworks.api.client.dataobjects.mwm.policy.DeviceConfigPolicy;
 import com.mojonetworks.api.client.dataobjects.mwm.session.MWMApiSession;
+import com.mojonetworks.api.client.dataobjects.mwm.template.Template;
+import com.mojonetworks.api.client.dataobjects.mwm.template.TemplateType;
 import com.mojonetworks.api.client.dataobjects.session.ApiSession.SessionState;
 
 public class MWMCommunicator {
@@ -261,5 +264,49 @@ public class MWMCommunicator {
 		}
 		response.close();
 		return batchResponse;
+	}
+
+	public static Template getTemplate(MWMApiSession mwmApiSession, int templateId, TemplateType type) throws ApiClientException {
+		String uri = mwmApiSession.getTarget().getUri().toString() + WebServiceConstant.TEMPLATES;
+		Response response = WebHTTPRequestInvoker.get(mwmApiSession.getTarget(), uri, null, String.valueOf(templateId), String.valueOf(type));
+		Template template = response.readEntity(new GenericType<Template>(){});
+		response.close();
+		return template;
+	}
+
+	public static Template addTemplate(MWMApiSession mwmApiSession, Template template) {
+		String uri = mwmApiSession.getTarget().getUri().toString() + WebServiceConstant.TEMPLATES;
+		Response response = WebHTTPRequestInvoker.put(mwmApiSession.getTarget(), uri, Entity.json(template), null);
+		Template newTemplate = response.readEntity(new GenericType<Template>(){});
+		response.close();
+		return newTemplate;
+	}
+
+	public static Template updateTemplate(MWMApiSession mwmApiSession, Template template) {
+		String uri = mwmApiSession.getTarget().getUri().toString() + WebServiceConstant.TEMPLATES;
+		Response response = WebHTTPRequestInvoker.post(mwmApiSession.getTarget(), uri, Entity.json(template), null);
+		Template updatedTemplate = response.readEntity(new GenericType<Template>(){});
+		response.close();
+		return updatedTemplate;
+	}
+
+	public static DeviceConfigPolicy geDeviceConfigPolicy(MWMApiSession mwmApiSession, LocalLocationId localLocationId, boolean defaultPolicy) {
+		String uri = mwmApiSession.getTarget().getUri().toString() + WebServiceConstant.POLICIES + WebServiceConstant.DEVICE_CONFIG + "/" + defaultPolicy;
+		Map<String, String> queryParams = new HashMap<>();
+		queryParams.put("locationid", String.valueOf(localLocationId.getId()));
+		
+		Response response = WebHTTPRequestInvoker.get(mwmApiSession.getTarget(), uri, queryParams);
+		DeviceConfigPolicy policy = response.readEntity(new GenericType<DeviceConfigPolicy>(){});
+		response.close();
+		return policy;
+	
+	}
+
+	public static void modifyDeviceConfigPolicy(MWMApiSession mwmApiSession, DeviceConfigPolicy deviceConfigPolicy, LocalLocationId localLocationId, boolean b) {
+		String uri = mwmApiSession.getTarget().getUri().toString() + WebServiceConstant.POLICIES + WebServiceConstant.DEVICE_CONFIG ;
+		Map<String, String> queryParams = new HashMap<>();
+		queryParams.put("locationid", String.valueOf(localLocationId.getId()));
+		
+		WebHTTPRequestInvoker.post(mwmApiSession.getTarget(), uri, Entity.json(deviceConfigPolicy), queryParams);
 	}
 }

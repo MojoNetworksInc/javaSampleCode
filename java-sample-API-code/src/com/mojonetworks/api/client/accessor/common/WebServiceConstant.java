@@ -8,44 +8,46 @@
  *
  */
 package com.mojonetworks.api.client.accessor.common;
-
-public interface WebServiceConstant {
+ 
+public interface WebServiceConstant{
 	
-	public static final String MLP_BASE_URL="/rest/api/v2"; 
-	public static final String MLP_KEY_LOGIN="/kvs/login";
-	public static final String MLP_KEY_ID="key_id";
-	public static final String MLP_KEY_VALUE="key_value";
-	public static final String MLP_SERVICES="/services";
-	public static final String MLP_SESSION_DATA="/session_data";
+	String MLP_BASE_URL="/rest/api/v2"; 
+	String MLP_KEY_LOGIN="/kvs/login";
+	String MLP_KEY_ID="key_id";
+	String MLP_KEY_VALUE="key_value";
+	String MLP_SERVICES="/services";
+	String MLP_SESSION_DATA="/session_data";
 	
-	public static final int MWM_DEFAULT_TIMEOUT = 5*60;
-	public static final String MWM_BASE_URL="/new/webservice/v4";
-	public static final String MWM_LOGIN = "/login";
-	public static final String MWM_KEEP_ALIVE = "/keepsessionalive";
-	public static final String MWM_LOGOUT = "/logout";
-	public static final String MWM_PRODUCT_INFO = "/productinfo";
-	public static final String MWM_GET_VERSION = "/version";
-	public static final String MWM_INSTANCE_ID_REQUEST_ATTR = "IID";
-	public static final String MWM_LOCATION_TREE="/locations/tree";
-	public static final String MWM_ANALYTICS = "/analytics";
-	public static final String MWM_VISIBILITY_DATA = "/visibilitydata";
-	public static final String MWM_ASSOCIATION_DATA = "/associationdata";
-	public static final String MWM_LOCATION_QUERYPARAM = "location";
-	public static final String MWM_HASH_MAC_PARAM = "tohashmac";
-	public static final String DEVICE = "/device";
-	public static final String V2_LOCATIONS = "/v2/locations";
-	public static final String TREE = "/tree";
-	public static final String BATCH = "/new/webservice/batch";
-	public static final String APS = "/aps";
-	public static final String CLIENTS = "/clients";
-	public static final String AT_LOCATION = "/atlocation";
-	public static final String CLIENTS_AT_LOCATION = CLIENTS + AT_LOCATION;
-	public static final String APS_AT_LOCATION = APS + AT_LOCATION;
-	public static final String LOCATION_PARAM = "location";
+	int MWM_DEFAULT_TIMEOUT = 5*60;
+	String MWM_BASE_URL="/new/webservice/v4";
+	String MWM_LOGIN = "/login";
+	String MWM_KEEP_ALIVE = "/keepsessionalive";
+	String MWM_LOGOUT = "/logout";
+	String MWM_PRODUCT_INFO = "/productinfo";
+	String MWM_GET_VERSION = "/version";
+	String MWM_INSTANCE_ID_REQUEST_ATTR = "IID";
+	String MWM_LOCATION_TREE="/locations/tree";
+	String MWM_ANALYTICS = "/analytics";
+	String MWM_VISIBILITY_DATA = "/visibilitydata";
+	String MWM_ASSOCIATION_DATA = "/associationdata";
+	String MWM_LOCATION_QUERYPARAM = "location";
+	String MWM_HASH_MAC_PARAM = "tohashmac";
+	String DEVICE = "/device";
+	String V2_LOCATIONS = "/v2/locations";
+	String TREE = "/tree";
+	String BATCH = "/new/webservice/batch";
+	String APS = "/aps";
+	String CLIENTS = "/clients";
+	String AT_LOCATION = "/atlocation";
+	String CLIENTS_AT_LOCATION = CLIENTS + AT_LOCATION;
+	String APS_AT_LOCATION = APS + AT_LOCATION;
+	String LOCATION_PARAM = "location";
 	
-	public static final String JSESSION_ID = "JSESSIONID";
-	public static final String PROTOCOL_SSL = "TLSv1.2";
-	public static final String HTTPS_PROTOCOLS = "https.protocols";
+	String JSESSION_ID = "JSESSIONID";
+	String PROTOCOL_SSL = "TLSv1.2";
+	String HTTPS_PROTOCOLS = "https.protocols";
 	
-	
+	String TEMPLATES = "/templates";
+	String POLICIES = "/policies";
+	String DEVICE_CONFIG = "/deviceconfig";
 }
