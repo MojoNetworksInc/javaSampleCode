@@ -16,7 +16,7 @@ This is a Eclipse Maven project, which can be imported and used for learning abo
 * Maven - 
 * RESTEasy Client - 3.0.11
 
-# How to use the Project
+# How to Use the Project
 Anyone can clone/fork this repo to extend and execute the Java Programs and try out various Mojo API calls. This project can also be used to create a library to be used inside your java code. 
 
 # Reference Documentation
